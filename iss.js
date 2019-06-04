@@ -1,6 +1,8 @@
 // const mymap = L.map('issMap').setView([51.505, -0.09], 13);
 const api_url = 'https://api.wheretheiss.at/v1/satellites/25544';
 let marker;
+let mymap;
+let firstTime = true;
 
 async function getISS() {
     const response = await fetch(api_url);
@@ -8,14 +10,18 @@ async function getISS() {
     // console.log(data);
     const { latitude, longitude } = data;
     // console.log(latitude, longitude);
-    document.getElementById('lat').textContent = latitude;
-    document.getElementById('lon').textContent = longitude;
+    document.getElementById('lat').textContent = latitude.toFixed(2); // 2 decimals
+    document.getElementById('lon').textContent = longitude.toFixed(2);
     marker.setLatLng([latitude, longitude]);
+    if (firstTime) {
+        mymap.setView([latitude, longitude], 5); // Center and zoom
+        firstTime = false; // Prevent resetting
+    }
 }
 
 window.addEventListener('load', function () {
     // Making map with tiles
-    const mymap = L.map('issMap').setView([0, 0], 1);
+    mymap = L.map('issMap').setView([0, 0], 1);
     const attribution = "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreet Maps</a>";
     const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     const tiles = L.tileLayer(tileUrl, { attribution });
